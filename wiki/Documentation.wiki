@@ -21,6 +21,10 @@ This project implements a knowledge base in the class FolKB. This class has thre
 - Retract
 This project also implements help classes and a back tracking mechanism.
 
+Special operator names:
+"Not" - Implements negation as failure
+"Eq" - Implements binary equality
+
 === Some hints ===
 General usage is shown in the source file through several examples.
 
@@ -60,3 +64,5 @@ for res_dict in myKB.ask("Parent(x,y)"):
     print "x=%s, y=%s" % (res_dict["x"],res_dict["y"])
 }}}
 You can interlieve telling, retracting and asking within your python program to use the propositional logic engine.
+
+See the source file for more examples.
