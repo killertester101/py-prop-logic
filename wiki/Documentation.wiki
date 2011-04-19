@@ -22,7 +22,9 @@ This project implements a knowledge base in the class FolKB. This class has thre
 This project also implements help classes and a back tracking mechanism.
 
 Special operator names:
+
 "Not" - Implements negation as failure
+
 "Eq" - Implements binary equality
 
 === Some hints ===
