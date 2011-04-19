@@ -26,14 +26,14 @@ General usage is shown in the source file through several examples.
 
 In general, you first need to tell the knowledge base some rules and some facts.
 Rules are indicated by an implication arrow, like
-"Parent(x,y) -> Offspring(y,x)"
+{{{"Parent(x,y) -> Offspring(y,x)"
 "Parent(x,y) & Female(x) -> Mother(x,y)"
 "Parent(y,x) & Parent(z,y) -> Grandparent(z,x)"
-"Not(Male(x)) -> Female(x)"
+"Not(Male(x)) -> Female(x)"}}}
 
 Facts do not have implication arrows, like
-"Parent(Pam,Bob)"
-"Male(Tom)"
+{{{"Parent(Pam,Bob)"
+"Male(Tom)"}}}
 
 There are three types of objects in this implementation (as of yet).
 - Variables start with a lower case letter. In the examples above, "x","y" and "z" are used.
@@ -51,8 +51,8 @@ To ask a question of the second kind, you use expressions of the form:
 "Parent(x,y)" 
 
 A short code snippet to clarify usage of ask
-[
+{{{
 for res_dict in myKB.ask("Parent(x,y)"):
     print "x=%s, y=%s" % (res_dict["x"],res_dict["y"])
-]
+}}}
 You can interlieve telling, retracting and asking within your python program to use the propositional logic engine.
