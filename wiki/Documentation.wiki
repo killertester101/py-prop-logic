@@ -51,7 +51,8 @@ To ask a question of the second kind, you use expressions of the form:
 "Parent(x,y)" 
 
 A short code snippet to clarify usage of ask
+[
 for res_dict in myKB.ask("Parent(x,y)"):
     print "x=%s, y=%s" % (res_dict["x"],res_dict["y"])
-
+]
 You can interlieve telling, retracting and asking within your python program to use the propositional logic engine.
