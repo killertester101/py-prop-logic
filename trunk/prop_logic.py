@@ -214,7 +214,6 @@ def fol_bc_or(KB,goal,theta,level=0):
             yield None
         else:
             yield dict(theta)
-
     elif goal.op=="Eq":
         #Equality between pairs
         val0 = subst(goal.args[0],theta)
@@ -267,8 +266,6 @@ class FolKB:
         self.KB =  {}
             
     def tell(self,goal):
-        #This KB can store sentences of the form
-        #Encoded as Expr("<-",[X,Y,Z]) where X, Y and Z are Expr's
         if isinstance(goal,str):
             goal=make_expr(goal)
             
@@ -298,8 +295,11 @@ class FolKB:
         if isinstance(query,str):
             query = make_expr(query)
         query_vars = []
-        for x in query.args:
-            if x[0] in string.lowercase:
+        for i in range(len(query.args)):
+            x = query.args[i]
+            if x=="_":
+                query.args[i]="silent_var_%d"%i
+            elif x[0] in string.lowercase:
                 query_vars.append(x)
         if len(query_vars)==0:
             #Return True or False only. No free variables to assign.
@@ -334,10 +334,11 @@ if __name__ == "__main__":
         to_convert.append("NewYorker(x) -> American(x)")
         to_convert.append("American(West)")
         to_convert.append("Not(Male(x)) -> Female(x)")
+        to_convert.append("Parent(z,x) & Parent(z,y) & Female(x) & Not(Eq(x,y)) -> Sister(x,y)")
         for s in to_convert:
             print "%s ==> %s"% (s, make_expr(s))
 
-    if False:
+    if True:
         print "==================================================================================="
         print "Cats"
         print "==================================================================================="
@@ -356,7 +357,7 @@ if __name__ == "__main__":
             print "Asking: %s" % question 
             for r in myKB.ask(question):    
                 print "yielded:",r
-    if False:
+    if True:
         print "==================================================================================="
         print "Weapon sales"
         print "==================================================================================="
@@ -391,7 +392,7 @@ if __name__ == "__main__":
         for r in myKB.ask("Criminal(x)"):
             print "    yielded:",r
 
-    if False:
+    if True:
         #This is by no means an attempt to implement the wumpus world example from AIMA
         #Please do not use
         print "==================================================================================="
@@ -460,10 +461,6 @@ if __name__ == "__main__":
         to_tell.append("Parent(Bob,Ann)")
         to_tell.append("Parent(Bob,Pat)")
         to_tell.append("Parent(Pat,Jim)")
-#        to_tell.append("Female(Pam)")  #If this is included in the KB, we will not use negation as failure
-#        to_tell.append("Female(Liz)")
-#        to_tell.append("Female(Ann)")
-#        to_tell.append("Female(Pat)")
         to_tell.append("Not(Male(x)) -> Female(x)") #Anything that is not Male is Female through negation as failure
         to_tell.append("Male(Tom)")
         to_tell.append("Male(Bob)")
@@ -475,7 +472,7 @@ if __name__ == "__main__":
         to_tell.append("Offspring(x,y) -> Descendant(x,y)")
         to_tell.append("Offspring(z,y) & Descendant(x,z)-> Descendant(x,y)")
         to_tell.append("Parent(z,x) & Parent(z,y) & Female(x) & Not(Eq(x,y)) -> Sister(x,y)")
-        to_tell.append("Father(x,y) & Father(y,z) -> Grandfather(x,z)")
+        to_tell.append("Father(x,y) & Father(y,z) -> PaternalGrandfather(x,z)")
         to_ask = []
         to_ask.append("Parent(x,Bob)")
         to_ask.append("Parent(Pam,Bob)")
@@ -487,7 +484,7 @@ if __name__ == "__main__":
         to_ask.append("Father(Bob,x)")
         to_ask.append("Descendant(x,Pam)")
         to_ask.append("Sister(x,y)")
-        to_ask.append("Grandfather(x,y)")
+        to_ask.append("PaternalGrandfather(x,_)")
         to_ask.append("Female(Jim)")
         to_ask.append("Female(Pam)")
         myKB = FolKB()
