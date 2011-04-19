@@ -38,6 +38,9 @@ def dprint(level,what):
     if level<3:
         print what
 
+special_operators = ["Not", "Eq"]
+
+
 _i = 1
 def standardize_variables(variables):
     return standardize(variables,{})
@@ -204,15 +207,24 @@ def occurs(var,x):
 def fol_bc_or(KB,goal,theta,level=0):
     dprint(3,"fol_bc_or: goal=%s, theta=%s, level=%d"%(goal,theta,level))
     if goal.op=="Not":
+        #Negation as failure
         sub_goal = goal.args[0]
-        key = sub_goal.op
-        naf = True
+        check_goal = subst(sub_goal,theta)
+        if any([x!=None for x in fol_bc_or(KB,check_goal,{})]):
+            yield None
+        else:
+            yield dict(theta)
+
+    elif goal.op=="Eq":
+        #Equality between pairs
+        val0 = subst(goal.args[0],theta)
+        val1 = subst(goal.args[1],theta)
+        if val0!=val1:
+            yield None
+        else:
+            yield dict(theta)
     else:
-        key = goal.op
-        naf = False
-    rules = KB[key]
-    dprint(3,"fol_bc_or: rules=%s"%rules)
-    if not naf:
+        rules = KB[goal.op]
         for rule in rules:
             srule = standardize_variables(rule)
             if srule.op=="<-":
@@ -229,13 +241,6 @@ def fol_bc_or(KB,goal,theta,level=0):
                     yield dict(thetap)
                 else:
                     yield None
-    else:
-        #Negation as failure
-        check_goal = subst(sub_goal,theta)
-        if any([x!=None for x in fol_bc_or(KB,check_goal,{})]):
-            yield None
-        else:
-            yield dict(theta)
     
     raise StopIteration()
                     
@@ -267,6 +272,8 @@ class FolKB:
         if isinstance(goal,str):
             goal=make_expr(goal)
             
+        if goal.op in special_operators:
+            raise Exception("Predicate is reserved word '%s'" % goal.op)
         if goal.op=="<-":
             key = goal.args[0].op
         else:
@@ -467,7 +474,7 @@ if __name__ == "__main__":
         to_tell.append("Parent(x,y) & Male(x) -> Father(x,y)")
         to_tell.append("Offspring(x,y) -> Descendant(x,y)")
         to_tell.append("Offspring(z,y) & Descendant(x,z)-> Descendant(x,y)")
-        to_tell.append("Parent(z,x) & Parent(z,y) & Female(x) -> Sister(x,y)")
+        to_tell.append("Parent(z,x) & Parent(z,y) & Female(x) & Not(Eq(x,y)) -> Sister(x,y)")
         to_tell.append("Father(x,y) & Father(y,z) -> Grandfather(x,z)")
         to_ask = []
         to_ask.append("Parent(x,Bob)")
